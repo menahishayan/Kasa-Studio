@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kasa Studio — turn Kasa bulbs into a studio lighting rig</title>
+    <meta
+      name="description"
+      content="A free, open-source local web console for TP-Link Kasa smart bulbs: auto-discovery, groups, precise intensity, HSL + color temperature, and 15 cinematic FX effects. Runs entirely on your network."
+    />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><circle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%2321242e%22/><path d=%22M16 2a14 14 0 0 1 0 28z%22 fill=%22%23ffb454%22/></svg>" />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <div class="glow glow--a"></div>
+    <div class="glow glow--b"></div>
+
+    <header class="nav">
+      <a class="brand" href="#top">
+        <span class="brand-mark">◐</span>
+        <span>Kasa Studio</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#effects">FX Effects</a>
+        <a href="#install">Install</a>
+        <a class="btn btn--ghost" href="https://github.com/menahishayan/Kasa-Studio" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="top" class="hero">
+        <div class="hero-copy reveal">
+          <p class="eyebrow">Free &amp; open source · 100% local, no cloud</p>
+          <h1>Turn your Kasa bulbs into a real studio lighting rig</h1>
+          <p class="hero-sub">
+            Auto-discover every Kasa bulb on your network, organize them into Key/Fill/Rim groups, dial in exact
+            intensity and color, and run 15 Aputure-style FX effects — all from one dark, fast console that works
+            on your laptop <em>and</em> your phone.
+          </p>
+          <div class="hero-ctas">
+            <a class="btn btn--primary" href="#install">Get started</a>
+            <a class="btn btn--ghost" href="https://github.com/menahishayan/Kasa-Studio" target="_blank" rel="noopener">
+              ⭐ View on GitHub
+            </a>
+          </div>
+          <div class="hero-install">
+            <code id="quickInstall">git clone https://github.com/menahishayan/Kasa-Studio.git &amp;&amp; cd Kasa-Studio &amp;&amp; npm install &amp;&amp; npm start</code>
+            <button type="button" class="copy-btn" data-copy-target="quickInstall" aria-label="Copy install command">Copy</button>
+          </div>
+        </div>
+
+        <div class="hero-mockups reveal">
+          <div class="mock mock--desktop">
+            <div class="mock-titlebar">
+              <span class="mock-dot dot--good"></span>
+              <span class="mock-titletext">Kasa Studio · 4/4 online</span>
+            </div>
+            <div class="mock-master">
+              <div>
+                <strong>Key Lights</strong>
+                <span class="muted">2 lights</span>
+              </div>
+              <div class="mock-btn">Power On</div>
+              <div class="mock-btn">Power Off</div>
+              <div class="mock-slider"><span style="left: 62%"></span></div>
+            </div>
+            <div class="mock-cards">
+              <div class="mock-card">
+                <div class="mock-card-head">
+                  <span class="mock-dot dot--good"></span>
+                  <strong>Key Light — Softbox L</strong>
+                  <span class="mock-identify">◎</span>
+                </div>
+                <div class="mock-sub">KL125(US) · 192.168.1.42</div>
+                <div class="mock-row">
+                  <span>Intensity</span>
+                  <div class="mock-slider"><span style="left: 72%"></span></div>
+                  <span class="mock-value">72%</span>
+                </div>
+                <div class="mock-row">
+                  <span>Temp</span>
+                  <div class="mock-slider mock-slider--temp"><span style="left: 30%"></span></div>
+                  <span class="mock-value">3400K</span>
+                </div>
+                <div class="mock-tags"><span class="mock-tag is-on">Key Lights</span></div>
+              </div>
+              <div class="mock-card">
+                <div class="mock-card-head">
+                  <span class="mock-dot dot--good"></span>
+                  <strong>Rim Light — Camera R</strong>
+                  <span class="mock-identify">◎</span>
+                </div>
+                <div class="mock-sub">KL130(US) · 192.168.1.57</div>
+                <div class="mock-row">
+                  <span>Hue</span>
+                  <div class="mock-slider mock-slider--hue"><span style="left: 80%"></span></div>
+                  <span class="mock-value">288°</span>
+                </div>
+                <div class="mock-row">
+                  <span>Effect</span>
+                  <span class="mock-badge">Cop Car ● live</span>
+                </div>
+                <div class="mock-tags"><span class="mock-tag">Rim</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mock mock--phone">
+            <div class="mock-phone-notch"></div>
+            <div class="mock-phone-card">
+              <div class="mock-card-head">
+                <span class="mock-dot dot--good"></span>
+                <strong>Fill Light</strong>
+              </div>
+              <div class="mock-row">
+                <span>Intensity</span>
+                <div class="mock-slider"><span style="left: 45%"></span></div>
+              </div>
+              <div class="mock-preset-row">
+                <span>10</span><span>25</span><span class="is-on">50</span><span>75</span><span>100</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section">
+        <h2 class="section-title reveal">Everything a DP actually wants from a lighting console</h2>
+        <p class="section-sub reveal">
+          Built to feel like a proper lighting-control app — not a smart-home gadget toy.
+        </p>
+        <div class="feature-grid">
+          <article class="feature-card reveal">
+            <div class="feature-icon">◈</div>
+            <h3>Auto-discovery</h3>
+            <p>Every Kasa bulb on your LAN shows up on its own — no manual IP entry, no app-store account.</p>
+          </article>
+          <article class="feature-card reveal">
+            <div class="feature-icon">✎</div>
+            <h3>Label every fixture</h3>
+            <p>Rename "TP-LINK_Smart Bulb_018E" to "Key Light — Softbox L" so your set actually makes sense.</p>
+          </article>
+          <article class="feature-card reveal">
+            <div class="feature-icon">◎</div>
+            <h3>Identify on demand</h3>
+            <p>One tap blinks the physical bulb, then restores its exact prior state — find any fixture instantly.</p>
+          </article>
+          <article class="feature-card reveal">
+            <div class="feature-icon">▤</div>
+            <h3>Groups &amp; master control</h3>
+            <p>Build Key / Fill / Rim / Background groups and drive power, intensity, and temp for the whole group at once.</p>
+          </article>
+          <article class="feature-card reveal">
+            <div class="feature-icon">%</div>
+            <h3>Type-in precise intensity</h3>
+            <p>Slide it or type the exact percentage you need — repeatable setups, no eyeballing.</p>
+          </article>
+          <article class="feature-card reveal">
+            <div class="feature-icon">◐</div>
+            <h3>Full HSL + color temp</h3>
+            <p>Hue, saturation, and 2500–6500K tunable white, with a White/Color tab for bulbs that do both.</p>
+          </article>
+          <article class="feature-card reveal">
+            <div class="feature-icon">✺</div>
+            <h3>15 cinematic FX effects</h3>
+            <p>Strobe, Fire, Fireworks, Cop Car, and more — modeled after the Aputure/amaran FX library.</p>
+          </article>
+          <article class="feature-card reveal">
+            <div class="feature-icon">▢</div>
+            <h3>Works on your phone</h3>
+            <p>Large touch targets and a responsive layout, so you can run the whole rig from set.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="effects" class="section">
+        <h2 class="section-title reveal">15 FX effects, right out of the box</h2>
+        <p class="section-sub reveal">
+          Kasa bulbs don't expose scene presets over their local protocol, so Kasa Studio drives these directly —
+          modeled after the FX library on Aputure/amaran lights (Sidus Link).
+        </p>
+        <div class="effects-groups">
+          <div class="effects-group reveal">
+            <h3><span class="dot dot--classic"></span>Classic FX <span class="muted">— any dimmable bulb</span></h3>
+            <div class="chip-row">
+              <span class="chip">Strobe</span>
+              <span class="chip">Pulsing</span>
+              <span class="chip">Candle</span>
+              <span class="chip">Fire</span>
+              <span class="chip">Paparazzi</span>
+              <span class="chip">Fireworks</span>
+              <span class="chip">Faulty Bulb</span>
+              <span class="chip">Lightning</span>
+              <span class="chip">TV</span>
+              <span class="chip">Explosion</span>
+              <span class="chip">Welding</span>
+            </div>
+          </div>
+          <div class="effects-group reveal">
+            <h3><span class="dot dot--color"></span>Color FX <span class="muted">— needs a color bulb</span></h3>
+            <div class="chip-row">
+              <span class="chip chip--color">Colors Chase</span>
+              <span class="chip chip--color">Cop Car</span>
+              <span class="chip chip--color">Party Lights</span>
+              <span class="chip chip--color">Club Lights</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="install" class="section install">
+        <h2 class="section-title reveal">Get it running in under a minute</h2>
+        <p class="section-sub reveal">Requires Node.js and Kasa bulbs on the same local network.</p>
+        <ol class="steps reveal">
+          <li>
+            <span class="step-num">1</span>
+            <div>
+              <p>Clone the repo</p>
+              <pre><code>git clone https://github.com/menahishayan/Kasa-Studio.git
+cd Kasa-Studio</code></pre>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <div>
+              <p>Install and run</p>
+              <pre><code>npm install
+npm start</code></pre>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <div>
+              <p>Open the console</p>
+              <pre><code>http://localhost:4173</code></pre>
+              <p class="muted">The terminal also prints a LAN address for pulling it up on your phone.</p>
+            </div>
+          </li>
+        </ol>
+        <div class="install-cta reveal">
+          <a class="btn btn--primary" href="https://github.com/menahishayan/Kasa-Studio" target="_blank" rel="noopener">
+            ⭐ Star &amp; clone on GitHub
+          </a>
+          <a class="btn btn--ghost" href="https://github.com/menahishayan/Kasa-Studio#readme" target="_blank" rel="noopener">
+            Read the full docs
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        <a href="https://github.com/menahishayan/Kasa-Studio" target="_blank" rel="noopener">Kasa Studio</a>
+        is free and open source (ISC License).
+      </p>
+      <p class="muted">
+        Not affiliated with TP-Link, Kasa, or Aputure. Product and effect names are used only to describe
+        compatibility and inspiration.
+      </p>
+    </footer>
+
+    <script src="script.js?v=1"></script>
+  </body>
+</html>

@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["start"],
       "port": 4173
+    },
+    {
+      "name": "landing-page",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--yes", "http-server", "docs", "-p", "5500", "-a", "localhost"],
+      "port": 5500
     }
   ]
 }
