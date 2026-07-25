@@ -1,0 +1,20 @@
+{
+  "name": "kasa-studio",
+  "version": "1.0.0",
+  "description": "Local web console for controlling TP-Link Kasa smart bulbs as a studio lighting rig",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "nanoid": "^6.0.0",
+    "tplink-smarthome-api": "^5.0.0",
+    "ws": "^8.21.1"
+  }
+}

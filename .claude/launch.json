@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kasa-studio",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start"],
+      "port": 4173
+    }
+  ]
+}

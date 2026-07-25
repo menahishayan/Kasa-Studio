@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kasa Studio — Lighting Console</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">◐</span>
+          <span class="brand-name">Kasa Studio</span>
+        </div>
+        <div class="topbar-status">
+          <span id="wsDot" class="dot dot--warn"></span>
+          <span id="wsLabel">connecting…</span>
+          <span class="sep">·</span>
+          <span id="onlineCount">0/0 online</span>
+        </div>
+        <div class="topbar-actions">
+          <button id="rescanBtn" class="btn btn--ghost">
+            <span id="rescanSpinner" class="spinner" hidden></span>
+            Rescan Network
+          </button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <nav class="sidebar">
+          <div class="sidebar-section">
+            <div class="sidebar-title">Views</div>
+            <ul id="viewList" class="view-list"></ul>
+          </div>
+          <div class="sidebar-section">
+            <div class="sidebar-title-row">
+              <div class="sidebar-title">Groups</div>
+              <button id="newGroupBtn" class="btn btn--icon" title="New group">+</button>
+            </div>
+            <ul id="groupList" class="view-list"></ul>
+          </div>
+          <div class="sidebar-footer">
+            <p>Bulbs are discovered automatically on your local network. If nothing appears, confirm this machine and the bulbs share the same subnet/VLAN and that UDP broadcast (port 9999) isn't blocked.</p>
+          </div>
+        </nav>
+
+        <main class="content">
+          <div id="masterBar" class="master-bar" hidden>
+            <div class="master-bar-title">
+              <span id="masterBarName">All Lights</span>
+              <span id="masterBarCount" class="muted"></span>
+            </div>
+            <div class="master-bar-controls">
+              <button class="btn btn--sm" data-master-action="on">Power On</button>
+              <button class="btn btn--sm" data-master-action="off">Power Off</button>
+              <label class="control-inline">
+                <span>Intensity</span>
+                <input type="range" min="0" max="100" value="100" id="masterBrightness" />
+                <input type="number" min="0" max="100" id="masterBrightnessNum" />
+                <span class="unit">%</span>
+              </label>
+              <label class="control-inline">
+                <span>Temp</span>
+                <input type="range" min="2500" max="6500" step="50" value="4000" id="masterTemp" />
+                <input type="number" min="2500" max="6500" id="masterTempNum" />
+                <span class="unit">K</span>
+              </label>
+              <button class="btn btn--sm btn--danger" data-master-action="stop-effects">Stop All Effects</button>
+            </div>
+          </div>
+
+          <div id="emptyState" class="empty-state" hidden>
+            <p>No devices discovered yet.</p>
+            <p class="muted">Kasa bulbs on the same network should appear within a few seconds. Click “Rescan Network” to force an immediate scan.</p>
+          </div>
+
+          <div id="grid" class="grid"></div>
+        </main>
+      </div>
+    </div>
+
+    <template id="cardTemplate">
+      <article class="card" data-card>
+        <header class="card-header">
+          <span class="dot" data-online-dot></span>
+          <div class="card-title">
+            <span class="card-label" data-label tabindex="0" title="Click to rename"></span>
+            <input class="card-label-input" data-label-input type="text" maxlength="40" hidden />
+            <span class="card-sub" data-sub></span>
+          </div>
+          <button class="btn btn--icon identify-btn" data-identify title="Identify (blink this light)">
+            <span class="bolt">◎</span>
+          </button>
+        </header>
+
+        <div class="card-body">
+          <div class="row row--power">
+            <label class="switch">
+              <input type="checkbox" data-power />
+              <span class="switch-track"><span class="switch-thumb"></span></span>
+            </label>
+            <span class="power-label" data-power-label>Off</span>
+            <div class="group-pills" data-group-pills></div>
+          </div>
+
+          <div class="row row--brightness" data-brightness-row>
+            <span class="row-label">Intensity</span>
+            <input type="range" min="0" max="100" value="0" data-brightness />
+            <input type="number" min="0" max="100" data-brightness-num />
+            <span class="unit">%</span>
+          </div>
+          <div class="presets" data-brightness-presets hidden>
+            <button data-preset="10">10</button>
+            <button data-preset="25">25</button>
+            <button data-preset="50">50</button>
+            <button data-preset="75">75</button>
+            <button data-preset="100">100</button>
+          </div>
+
+          <div class="tabs" data-color-tabs hidden>
+            <button class="tab" data-tab="white">White</button>
+            <button class="tab" data-tab="color">Color</button>
+          </div>
+
+          <div class="row row--temp" data-temp-row hidden>
+            <span class="row-label">Temperature</span>
+            <input type="range" data-temp />
+            <input type="number" data-temp-num />
+            <span class="unit">K</span>
+          </div>
+
+          <div class="color-panel" data-color-panel hidden>
+            <div class="row row--hue">
+              <span class="row-label">Hue</span>
+              <input type="range" min="0" max="360" data-hue />
+              <input type="number" min="0" max="360" data-hue-num />
+              <span class="unit">°</span>
+            </div>
+            <div class="row row--sat">
+              <span class="row-label">Saturation</span>
+              <input type="range" min="0" max="100" data-sat />
+              <input type="number" min="0" max="100" data-sat-num />
+              <span class="unit">%</span>
+            </div>
+          </div>
+
+          <div class="swatch-row" data-swatch-row hidden>
+            <span class="swatch" data-swatch></span>
+            <span class="muted" data-swatch-label>—</span>
+          </div>
+
+          <div class="effects" data-effects-row hidden>
+            <div class="row row--effect-select">
+              <span class="row-label">Effect</span>
+              <select data-effect-type>
+                <option value="">None</option>
+                <optgroup label="Classic FX">
+                  <option value="strobe">Strobe</option>
+                  <option value="pulse">Pulsing</option>
+                  <option value="candle">Candle</option>
+                  <option value="fire">Fire</option>
+                  <option value="paparazzi">Paparazzi</option>
+                  <option value="fireworks">Fireworks</option>
+                  <option value="faultyBulb">Faulty Bulb</option>
+                  <option value="lightning">Lightning</option>
+                  <option value="tv">TV</option>
+                  <option value="explosion">Explosion</option>
+                  <option value="welding">Welding</option>
+                </optgroup>
+                <optgroup label="Color FX (needs a color bulb)">
+                  <option value="colorCycle">Colors Chase</option>
+                  <option value="copCar">Cop Car</option>
+                  <option value="partyLights">Party Lights</option>
+                  <option value="clubLights">Club Lights</option>
+                </optgroup>
+              </select>
+              <button class="btn btn--sm" data-effect-toggle>Start</button>
+            </div>
+            <div class="effect-params" data-effect-params></div>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>

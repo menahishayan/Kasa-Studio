@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Runtime data (labels/groups store, generated on first run)
+data/
+
+# Logs
+npm-debug.log*
+*.log
+
+# Env / secrets
+.env
+.env.*
+
+# OS / editor cruft
+.DS_Store
+.vscode/
+.idea/
