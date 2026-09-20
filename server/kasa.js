@@ -1,14 +1,40 @@
 import { EventEmitter } from 'node:events';
+import { networkInterfaces } from 'node:os';
 import tplink from 'tplink-smarthome-api';
 
 const { Client } = tplink;
 
 const DISCOVERY_INTERVAL_MS = 4000;
 const MIN_EFFECT_TICK_MS = 120;
+// Matches network.js's AP_IFACE default. Bulbs always join the Pi's own
+// access point on this interface, regardless of whether eth0 is also up.
+const DISCOVERY_IFACE = process.env.KASA_AP_IFACE || 'wlan0';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const clampInt = (value, min, max) => Math.min(max, Math.max(min, Math.round(Number(value))));
 const wrapHue = (value) => ((Math.round(Number(value)) % 360) + 360) % 360;
+
+/**
+ * A UDP broadcast to 255.255.255.255 from an unbound socket goes out
+ * whichever interface owns the default route — not necessarily the one the
+ * bulbs are actually on. On this appliance the bulbs are always on
+ * DISCOVERY_IFACE's own subnet (the self-hosted AP), so when that interface
+ * has an address we bind discovery to it and target its subnet's broadcast
+ * address directly instead of relying on the routing table's pick. Falls
+ * back to the library's default (0.0.0.0 / 255.255.255.255) when the
+ * interface isn't present, e.g. running this off the Pi for local dev.
+ */
+function discoveryTarget() {
+  const entry = (networkInterfaces()[DISCOVERY_IFACE] ?? []).find(
+    (net) => net.family === 'IPv4' && !net.internal,
+  );
+  if (!entry) return {};
+  const octet = (ip) => ip.split('.').map(Number);
+  const addr = octet(entry.address);
+  const mask = octet(entry.netmask);
+  const broadcast = addr.map((byte, i) => byte | (~mask[i] & 255)).join('.');
+  return { address: entry.address, broadcast };
+}
 
 function stateFromDevice(device) {
   if (device.deviceType === 'bulb') {
@@ -137,6 +163,7 @@ export class KasaManager extends EventEmitter {
       discoveryInterval: DISCOVERY_INTERVAL_MS,
       offlineTolerance: 3,
       breakoutChildren: true,
+      ...discoveryTarget(),
     });
     return this;
   }
