@@ -24,6 +24,7 @@
             <span id="rescanSpinner" class="spinner" hidden></span>
             Rescan Network
           </button>
+          <button id="networkBtn" class="btn btn--icon" title="Network settings">⚙</button>
         </div>
       </header>
 
@@ -182,6 +183,66 @@
         </div>
       </article>
     </template>
+
+    <dialog id="networkModal" class="modal">
+      <form method="dialog" class="modal-body" id="networkForm">
+        <header class="modal-header">
+          <h2>Network</h2>
+          <button type="submit" value="close" class="btn btn--icon" title="Close">✕</button>
+        </header>
+
+        <p id="networkManagedNote" class="muted" hidden>
+          This instance doesn't manage networking (KASA_MANAGE_NETWORK=false) — showing config only.
+        </p>
+
+        <section class="network-section">
+          <div class="network-section-title">Self-hosted Wi-Fi (for your Kasa bulbs)</div>
+          <label class="switch-row">
+            <span>Broadcast this network</span>
+            <label class="switch">
+              <input type="checkbox" id="apEnabled" />
+              <span class="switch-track"><span class="switch-thumb"></span></span>
+            </label>
+          </label>
+          <label class="field">
+            <span>Network name (SSID)</span>
+            <input type="text" id="apSsid" maxlength="32" placeholder="Shayan IoT" />
+          </label>
+          <label class="field">
+            <span>Password <span class="muted">(blank = open network)</span></span>
+            <input type="password" id="apPassword" maxlength="63" placeholder="8+ characters, or leave blank" autocomplete="new-password" />
+          </label>
+          <div class="network-actions">
+            <button type="button" id="apSaveBtn" class="btn btn--sm btn--accent">Save &amp; Apply</button>
+            <button type="button" id="apRestartBtn" class="btn btn--sm btn--ghost">Restart Wi-Fi</button>
+          </div>
+          <p id="apWarning" class="muted network-warning" hidden></p>
+        </section>
+
+        <section class="network-section">
+          <div class="network-section-title">Hostname</div>
+          <label class="field">
+            <span>Access this console at</span>
+            <div class="hostname-row">
+              <input type="text" id="hostnameInput" maxlength="63" placeholder="shayan-iot" />
+              <span class="muted">.local</span>
+            </div>
+          </label>
+          <div class="network-actions">
+            <button type="button" id="hostnameSaveBtn" class="btn btn--sm btn--accent">Save &amp; Apply</button>
+          </div>
+        </section>
+
+        <section class="network-section">
+          <div class="network-section-title">Status</div>
+          <dl class="status-grid" id="networkStatus">
+            <dt>Access point</dt><dd data-status="ap">—</dd>
+            <dt>Ethernet (internet)</dt><dd data-status="wan">—</dd>
+            <dt>System hostname</dt><dd data-status="hostname">—</dd>
+          </dl>
+        </section>
+      </form>
+    </dialog>
 
     <script src="app.js" type="module"></script>
   </body>

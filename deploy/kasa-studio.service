@@ -1,0 +1,18 @@
+[Unit]
+Description=Kasa Studio — standalone lighting console + access point
+After=network.target NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/Kasa-Studio
+ExecStart=/usr/bin/node server/index.js
+Restart=on-failure
+RestartSec=3
+Environment=NODE_ENV=production
+# Environment=PORT=4173
+# Environment=KASA_MANAGE_NETWORK=false   # set to disable AP/hostname management (e.g. when testing on a laptop)
+
+[Install]
+WantedBy=multi-user.target

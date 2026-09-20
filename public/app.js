@@ -773,11 +773,94 @@ function connectWs() {
   });
 }
 
+// ---------- network settings ----------
+
+function initNetworkModal() {
+  const modal = document.getElementById('networkModal');
+  const btn = document.getElementById('networkBtn');
+  const enabledInput = document.getElementById('apEnabled');
+  const ssidInput = document.getElementById('apSsid');
+  const passwordInput = document.getElementById('apPassword');
+  const hostnameInput = document.getElementById('hostnameInput');
+  const warning = document.getElementById('apWarning');
+  const managedNote = document.getElementById('networkManagedNote');
+
+  async function refresh() {
+    try {
+      const { config, hasPassword, status, managed } = await api('/api/network');
+      managedNote.hidden = !!managed;
+      enabledInput.checked = !!config.apEnabled;
+      ssidInput.value = config.ssid ?? '';
+      passwordInput.value = '';
+      passwordInput.placeholder = hasPassword ? '(unchanged) 8+ characters, or leave blank to open' : '8+ characters, or leave blank';
+      hostnameInput.value = config.hostname ?? '';
+
+      const apCell = document.querySelector('[data-status="ap"]');
+      const wanCell = document.querySelector('[data-status="wan"]');
+      const hostCell = document.querySelector('[data-status="hostname"]');
+      if (status) {
+        apCell.textContent = status.ap.active ? `broadcasting "${status.ap.ssid}"` : 'off';
+        wanCell.textContent = status.wan.connected ? 'connected (internet passthrough available)' : 'not connected';
+        hostCell.textContent = status.hostname ? `${status.hostname}.local` : '—';
+      } else {
+        apCell.textContent = wanCell.textContent = hostCell.textContent = 'unavailable';
+      }
+    } catch (err) {
+      showError(err);
+    }
+  }
+
+  btn.addEventListener('click', () => {
+    warning.hidden = true;
+    modal.showModal();
+    refresh();
+  });
+
+  document.getElementById('apSaveBtn').addEventListener('click', async () => {
+    warning.hidden = true;
+    const wasOnSameRadio = location.hostname !== 'localhost' && location.hostname !== '127.0.0.1';
+    try {
+      await api('/api/network/ap', 'PUT', {
+        enabled: enabledInput.checked,
+        ssid: ssidInput.value,
+        password: passwordInput.value,
+      });
+      if (wasOnSameRadio && enabledInput.checked) {
+        warning.hidden = false;
+        warning.textContent =
+          'Applied. If your device was connected over the network this Pi is switching away from, you may need to reconnect to the new Wi-Fi network to keep using this page.';
+      }
+      await refresh();
+    } catch (err) {
+      showError(err);
+    }
+  });
+
+  document.getElementById('apRestartBtn').addEventListener('click', async () => {
+    try {
+      await api('/api/network/ap/restart', 'POST');
+      await refresh();
+    } catch (err) {
+      showError(err);
+    }
+  });
+
+  document.getElementById('hostnameSaveBtn').addEventListener('click', async () => {
+    try {
+      await api('/api/network/hostname', 'PUT', { hostname: hostnameInput.value.trim().toLowerCase() });
+      await refresh();
+    } catch (err) {
+      showError(err);
+    }
+  });
+}
+
 // ---------- boot ----------
 
 async function boot() {
   initMasterBar();
   initSidebarActions();
+  initNetworkModal();
   try {
     const initial = await api('/api/state');
     applyState(initial);
