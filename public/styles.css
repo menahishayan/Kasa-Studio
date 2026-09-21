@@ -273,6 +273,7 @@ body {
 }
 
 input[type='text'],
+input[type='password'],
 input[type='number'] {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
@@ -1043,4 +1044,128 @@ input[data-temp],
   .row-label {
     width: 60px;
   }
+}
+
+/* ---------- network modal ---------- */
+
+.btn--accent {
+  border-color: rgba(255, 180, 84, 0.5);
+  background: rgba(255, 180, 84, 0.16);
+  color: var(--accent);
+}
+
+.btn--accent:hover {
+  background: rgba(255, 180, 84, 0.26);
+}
+
+.modal {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-panel);
+  color: var(--text);
+  padding: 0;
+  width: min(440px, calc(100vw - 32px));
+  max-height: min(90vh, 720px);
+}
+
+.modal::backdrop {
+  background: rgba(4, 5, 8, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 18px 20px 22px;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.network-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.network-section:first-of-type {
+  padding-top: 0;
+  border-top: none;
+}
+
+.network-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12.5px;
+  color: var(--text-dim);
+}
+
+.field input[type='text'],
+.field input[type='password'] {
+  font-size: 13px;
+  padding: 8px 10px;
+}
+
+.hostname-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hostname-row input {
+  flex: 1;
+}
+
+.network-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.network-warning {
+  color: var(--warn);
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 14px;
+  margin: 0;
+  font-size: 12.5px;
+}
+
+.status-grid dt {
+  color: var(--text-dim);
+}
+
+.status-grid dd {
+  margin: 0;
+  text-align: right;
 }

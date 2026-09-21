@@ -7,7 +7,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, '..', 'data');
 const DATA_FILE = join(DATA_DIR, 'store.json');
 
-const EMPTY_STATE = { devices: {}, groups: {}, presets: {} };
+const DEFAULT_NETWORK = {
+  apEnabled: true,
+  ssid: 'Shayan IoT',
+  password: '',
+  hostname: 'shayan-iot',
+};
+
+const EMPTY_STATE = { devices: {}, groups: {}, presets: {}, network: DEFAULT_NETWORK };
 
 export class Store {
   constructor() {
@@ -109,5 +116,17 @@ export class Store {
     return Object.entries(this.state.devices)
       .filter(([, meta]) => meta.groupIds?.includes(groupId))
       .map(([deviceId]) => deviceId);
+  }
+
+  // --- network config (self-hosted AP + hostname) ---
+
+  getNetworkConfig() {
+    return { ...DEFAULT_NETWORK, ...this.state.network };
+  }
+
+  setNetworkConfig(patch) {
+    this.state.network = { ...DEFAULT_NETWORK, ...this.state.network, ...patch };
+    this.save();
+    return this.getNetworkConfig();
   }
 }

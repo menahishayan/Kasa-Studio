@@ -6,13 +6,27 @@ import { fileURLToPath } from 'node:url';
 import { WebSocketServer } from 'ws';
 import { KasaManager } from './kasa.js';
 import { Store } from './store.js';
+import * as network from './network.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4173;
+const MANAGE_NETWORK = process.env.KASA_MANAGE_NETWORK !== 'false';
 
 const store = new Store();
 const manager = new KasaManager(store);
 manager.startDiscovery();
+
+if (MANAGE_NETWORK) {
+  const netConfig = store.getNetworkConfig();
+  network
+    .applyApState({ enabled: netConfig.apEnabled, ssid: netConfig.ssid, password: netConfig.password })
+    .catch((err) => console.error('[network] AP init failed:', err.message));
+  if (netConfig.hostname) {
+    network.setHostname(netConfig.hostname).catch((err) => console.error('[network] hostname init failed:', err.message));
+  }
+} else {
+  console.log('[network] KASA_MANAGE_NETWORK=false — skipping AP/hostname reconciliation on startup');
+}
 
 const app = express();
 app.use(express.json());
@@ -228,6 +242,50 @@ app.delete(
   }),
 );
 
+// --- network (self-hosted AP + hostname) ---
+
+app.get(
+  '/api/network',
+  asyncRoute(async (_req, res) => {
+    const config = store.getNetworkConfig();
+    const status = MANAGE_NETWORK ? await network.getStatus() : null;
+    res.json({ config: { ...config, password: undefined }, hasPassword: !!config.password, status, managed: MANAGE_NETWORK });
+  }),
+);
+
+app.put(
+  '/api/network/ap',
+  asyncRoute(async (req, res) => {
+    if (!MANAGE_NETWORK) return res.status(409).json({ error: 'Network management is disabled on this instance.' });
+    const ssid = network.validateSsid(req.body.ssid);
+    const password = network.validatePassword(req.body.password ?? '');
+    const enabled = req.body.enabled !== false;
+    await network.applyApState({ enabled, ssid, password });
+    const config = store.setNetworkConfig({ apEnabled: enabled, ssid, password });
+    res.json({ config: { ...config, password: undefined }, hasPassword: !!config.password });
+  }),
+);
+
+app.post(
+  '/api/network/ap/restart',
+  asyncRoute(async (_req, res) => {
+    if (!MANAGE_NETWORK) return res.status(409).json({ error: 'Network management is disabled on this instance.' });
+    const config = store.getNetworkConfig();
+    await network.restartAp(config);
+    res.json({ ok: true });
+  }),
+);
+
+app.put(
+  '/api/network/hostname',
+  asyncRoute(async (req, res) => {
+    if (!MANAGE_NETWORK) return res.status(409).json({ error: 'Network management is disabled on this instance.' });
+    const hostname = await network.setHostname(req.body.hostname);
+    const config = store.setNetworkConfig({ hostname });
+    res.json({ config: { ...config, password: undefined } });
+  }),
+);
+
 function lanAddresses() {
   const addresses = [];
   for (const entries of Object.values(networkInterfaces())) {
@@ -242,6 +300,10 @@ httpServer.listen(PORT, () => {
   console.log(`Kasa Studio console running at http://localhost:${PORT}`);
   for (const address of lanAddresses()) {
     console.log(`  on your network (e.g. from a phone): http://${address}:${PORT}`);
+  }
+  if (MANAGE_NETWORK) {
+    const { hostname } = store.getNetworkConfig();
+    if (hostname) console.log(`  by hostname (mDNS): http://${hostname}.local:${PORT}`);
   }
 });
 
